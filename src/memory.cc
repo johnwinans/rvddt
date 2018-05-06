@@ -73,9 +73,24 @@ int64_t memory::get64(uint64_t addr)
 
 void memory::set8(uint64_t addr, uint8_t val)
 {
+#ifdef MAGIC_UART_TX_ADDRESS
+	if (addr == MAGIC_UART_TX_ADDRESS)
+	{
+		putchar(val);
+		return;
+	}
+#endif
+
 	if (addr < start || addr >= start+len)
     {
-        // XXX Help the new by printing a warning here
+		if (getMemoryWarnings())
+		{
+			printf("WARNING: accessing non-existent memory at address: 0x%8.8x", (uint32_t)addr);
+#ifdef DEBUGGING_HACKS
+			printf(", pc=0x%8.8x", cpu->getPc());
+#endif
+			printf("\n");
+		}
         return;        // invalid memory area, throw it away
     }
 
