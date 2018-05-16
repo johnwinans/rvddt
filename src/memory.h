@@ -9,16 +9,32 @@ class memory
 public:
 	memory(uint64_t start, uint64_t length);
 	~memory();
+	
+	/*
+	 * These functions fetch memory from a given address in memory.
+	 */
 
-	int8_t get8(uint64_t addr);
-	int16_t get16(uint64_t addr);
-	int32_t get32(uint64_t addr);
-	int64_t get64(uint64_t addr);
+	//Fetches one byte from the given address in memory.
+	int8_t get8(uint64_t addr) const;
+	//Fetches two bytes from the given address in memory.
+	int16_t get16(uint64_t addr) const;
+	//Fetches four bytes from the given address in memory.
+	int32_t get32(uint64_t addr) const;
+	//Fetches eight bytes from the given address in memory.
+	int64_t get64(uint64_t addr) const;
 
-    void set8(uint64_t addr, uint8_t val);
-    void set16(uint64_t addr, uint16_t val);
-    void set32(uint64_t addr, uint32_t val);
-    void set64(uint64_t addr, uint64_t val);
+	/*
+	 * These functions set memory at a given address at a given byte length
+	 */
+
+	//Sets one byte of  memory at the given address.
+    	void set8(uint64_t addr, uint8_t val);
+	//Sets two bytes of memory at the given address.
+    	void set16(uint64_t addr, uint16_t val);
+	//Sets four bytes of memory at the given address.
+    	void set32(uint64_t addr, uint32_t val);
+	//Sets eight bytes of memory at the given address
+    	void set64(uint64_t addr, uint64_t val);
 
 	void dump(uint64_t addr, uint64_t length);
 
