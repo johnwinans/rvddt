@@ -168,6 +168,8 @@ static void cli()
 	char		p1[1024];
 	char		p2[64];
 
+	int echo = !isatty(fileno(stdin));
+
 	last[0] = '\0';
 
 	printf("This is rvddt.  Enter ? for help.\n");
@@ -191,6 +193,9 @@ static void cli()
 			strcpy(buf, last);
 
 		last[0] = '\0';
+
+		if (echo)
+			puts(buf);
 
 		// exec command
 		switch (buf[0])
@@ -272,7 +277,7 @@ static void cli()
 				"   d [addr [len]]    dump memory starting at addr for len bytes\n"
 				"   g [addr]          set pc=addr and silently execute qty instructions\n"
 				"   r                 dump the contents of the CPU regs\n"
-				"   t [addr [qty]]    set pc=addr and trace qty instructions\n"
+				"   t [[addr] qty]    set pc=addr and trace qty instructions\n"
 				"   x                 exit\n"
 				"   > filename        redirect output to 'filename' (use - for stdout)\n"
 				);
