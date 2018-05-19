@@ -89,8 +89,9 @@ void rv32::dump()
 			if (i%4 == 0)
 				fprintf(ddtout, "%s", i==0?"":"\n");
 			
-			fprintf(ddtout, "%*s %8.8x", i%4==0?6:4, getRegName(i), getReg(i));
+			fprintf(ddtout, "%*s %s%s %8.8x", i%4==0?5:4, getRegName(i), i<10?" ":"", regNames[0][i], getReg(i));
 		}
+		fprintf(ddtout, "\n       pc %8.8x\n", getPc());
 	}
 	else
 	{
@@ -101,9 +102,9 @@ void rv32::dump()
 			
 			fprintf(ddtout, "%c%8.8x", (i%8!=0 && i%4==0)?'-':' ', getReg(i));
 		}
+		fprintf(ddtout, "\n   pc %8.8x\n", getPc());
 	}
 
-	fprintf(ddtout, "\n   pc %8.8x\n", getPc());
 }
 
 int32_t rv32::getReg(uint8_t r)
