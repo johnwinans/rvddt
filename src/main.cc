@@ -111,22 +111,24 @@ static void cli_g()
 /**
 * Dump the CPU status and then execute one instruction.
 *************************************************************************/
-static int cli_t()
+static int cli_t(int regs)
 {
-	cpu->dump();
+	if (regs)
+		cpu->dump();
 	return cpu->exec();
 }
-static void cli_t(uint64_t count)
+static void cli_t(uint64_t count, int regs)
 {
 	int s = 0;
 	while(count-- && !s)
-		s = cli_t();
+		s = cli_t(regs);
 }
-static void cli_t(uint64_t pc, uint64_t count)
+static void cli_t(uint64_t pc, uint64_t count, int regs)
 {
 	cpu->setPc(pc);
-	cli_t(count);
+	cli_t(count, regs);
 }
+
 
 /**
 * Examine the CPU regs/status.
@@ -181,80 +183,95 @@ static void cli()
 		// get command line
 		if (fgets(buf, sizeof(buf), stdin) == 0)
 		{
+			// got EOF, process it like an 'x' command
 			buf[0] = 'x';
 			buf[1] = '\0';
 		}
 
+		// trim any white junk off the end of the line
 		int len = strlen(buf);
 		while (len>0 && isspace(buf[len-1]))
 			buf[--len] = '\0';		// trim junk newline
 
+		// if user hit return, repeat the last repeatable command
 		if (buf[0] == '\0')
 			strcpy(buf, last);
-
 		last[0] = '\0';
 
 		if (echo)
 			puts(buf);
 
-		// exec command
-		switch (buf[0])
+		char cmd[2048];
+		char* args;
+		int i = 0;
+		len = strlen(buf);
+		while (i<len && (isalpha(buf[i]) || buf[i]=='?' || buf[i]=='>'))
 		{
-		case 0:		// got a blank line
-			break;
+			cmd[i] = buf[i];
+			++i;
+		}
+		cmd[i] = '\0';
+		args = &buf[i];
 
-		case 'x':	// exit the simulator
+		// exec command
+		if (cmd[0] == '\0')				// empty line (with no repeatable command in the cache)
+			;
+		else if (!strcmp(cmd, "x"))		// exit the simulator
 			running = 0;
-			break;
-
-		case 'r':	// dump the regs
+		else if (!strcmp(cmd, "r"))		// dump the regs
 			cli_r();
-			break;
-
-		case 't':	// trace insns
-			strcpy(last, buf);
-			if (sscanf(&buf[1], " %63s %63s", p1, p2) == 2)
-				cli_t(strtoul(p1, 0, 0), strtoul(p2, 0, 0));
-			else if (sscanf(&buf[1], " %63s", p1) == 1)
-				cli_t(strtoul(p1, 0, 0));
+		else if (!strcmp(cmd, "t"))		// trace insns
+		{
+			if (sscanf(args, " %63s %63s", p1, p2) == 2)
+				cli_t(strtoul(p1, 0, 0), strtoul(p2, 0, 0), 1);
+			else if (sscanf(args, " %63s", p1) == 1)
+				cli_t(strtoul(p1, 0, 0), 1);
 			else
-				cli_t();
-			strcpy(last, "t");
-			break;
-
-		case 'g':	// go [entry]
-			if (sscanf(&buf[1], " %63s", p1) == 1)
+				cli_t(1);
+			strcpy(last, "t");			// suppress the args when repeating the command
+		}
+		else if (!strcmp(cmd, "ti"))	// trace insns w/o reg dumps
+		{
+			if (sscanf(args, " %63s %63s", p1, p2) == 2)
+				cli_t(strtoul(p1, 0, 0), strtoul(p2, 0, 0), 0);
+			else if (sscanf(args, " %63s", p1) == 1)
+				cli_t(strtoul(p1, 0, 0), 0);
+			else
+				cli_t(0);
+			strcpy(last, "ti");			// suppress the args when repeating the command
+		}
+		else if (!strcmp(cmd, "g"))		// go [entry]
+		{
+			if (sscanf(args, " %63s", p1) == 1)
 				cli_g(strtoul(p1, 0, 0));
 			else
 				cli_g();
 			strcpy(last, buf);
-			break;
+		}
+		else if (!strcmp(cmd, "d"))		// dump memory
+		{
+			int mw = mem->getMemoryWarnings();
+			mem->setMemoryWarnings(0);
 
-		case 'd':	// dump memory
+			uint64_t addr = d_next;
+			uint64_t count = 0x100;
+			if (sscanf(args, " %63s %63s", p1, p2) == 2)
 			{
-				int mw = mem->getMemoryWarnings();
-				mem->setMemoryWarnings(0);
-
-				uint64_t addr = d_next;
-				uint64_t count = 0x100;
-				if (sscanf(&buf[1], " %63s %63s", p1, p2) == 2)
-				{
-					addr = strtoul(p1, 0, 0);
-					count = strtoul(p2, 0, 0);
-				}
-				else if (sscanf(&buf[1], " %63s", p1) == 1)
-				{
-					addr = strtoul(p1, 0, 0);
-				}
-				cli_d(addr, count);
-				d_next = addr+count;
-				mem->setMemoryWarnings(mw);
+				addr = strtoul(p1, 0, 0);
+				count = strtoul(p2, 0, 0);
 			}
-			strcpy(last, "d");
-			break;
-
-		case '>':	// redirect output
-			if (sscanf(&buf[1], " %1023s", p1) != 1)
+			else if (sscanf(args, " %63s", p1) == 1)
+			{
+				addr = strtoul(p1, 0, 0);
+			}
+			cli_d(addr, count);
+			d_next = addr+count;
+			mem->setMemoryWarnings(mw);
+			strcpy(last, "d");			// suppress the args when repeating the command
+		}
+		else if (!strcmp(cmd, ">"))		// redirect output
+		{
+			if (sscanf(args, " %1023s", p1) != 1)
 			{
 				printf("Invalid redirect (missing filename?)\n");
 				break;
@@ -264,26 +281,27 @@ static void cli()
 			else
 				redirect(p1);
 			last[0] = '\0';
-			break;
-
-		case 'a':
+		}
+		else if (!strcmp(cmd, "a"))		// change register naming mode
+		{
 			cpu->setRegNamesABI(!cpu->getRegNamesABI());
 			last[0] = '\0';
-			break;
-
-		case '?':
+		}
+		else if (!strcmp(cmd, "?"))		// help
+		{
 			printf("commands:\n"
 				"   a                 toggle the display of register ABI and x-names\n"
 				"   d [addr [len]]    dump memory starting at addr for len bytes\n"
 				"   g [addr]          set pc=addr and silently execute qty instructions\n"
 				"   r                 dump the contents of the CPU regs\n"
 				"   t [[addr] qty]    set pc=addr and trace qty instructions\n"
+				"   ti [[addr] qty]   set pc=addr and trace qty instructions w/o reg dumps\n"
 				"   x                 exit\n"
 				"   > filename        redirect output to 'filename' (use - for stdout)\n"
 				);
-			break;
-
-		default:
+		}
+		else
+		{
 			printf("Illegal command.  Press ? for help.\n");
 		}
 	}
