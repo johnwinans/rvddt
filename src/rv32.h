@@ -10,6 +10,12 @@ enum class insntype { R, I, S, B, U, J };
 class rv32;
 typedef void (*execInsnFunc)(rv32 *, uint32_t);
 
+
+
+/*
+ * This structure is an enumeration containing information about an instruction. 
+ * It contains the operator code as well as a function pointer for executing the actual instruction
+ */
 struct insn
 {
 	uint8_t		opcode;

@@ -30,7 +30,7 @@ memory::~memory()
 	mem = 0;
 }
 
-int8_t memory::get8(uint64_t addr)
+int8_t memory::get8(uint64_t addr) const 
 {
 	if (addr < start || addr >= start+len)
 	{
@@ -49,21 +49,21 @@ int8_t memory::get8(uint64_t addr)
 	return mem[addr-start];
 }
 
-int16_t memory::get16(uint64_t addr)
+int16_t memory::get16(uint64_t addr) const
 {
 	int16_t i = (uint8_t)get8(addr);
 	i |= ((uint16_t)get8(addr+1))<<8;
 	return i;
 }
 
-int32_t memory::get32(uint64_t addr)
+int32_t memory::get32(uint64_t addr) const
 {
 	int32_t i = (uint16_t)get16(addr);
 	i |= ((uint32_t)get16(addr+2))<<16;
 	return i;
 }
 
-int64_t memory::get64(uint64_t addr)
+int64_t memory::get64(uint64_t addr) const
 {
 	int64_t i = (uint32_t)get32(addr);
 	i |= ((uint64_t)get32(addr+4))<<32;
@@ -71,7 +71,7 @@ int64_t memory::get64(uint64_t addr)
 	return i;
 }
 
-void memory::set8(uint64_t addr, uint8_t val)
+void memory::set8(uint64_t addr, uint8_t val) 
 {
 #ifdef MAGIC_UART_TX_ADDRESS
 	if (addr == MAGIC_UART_TX_ADDRESS)
