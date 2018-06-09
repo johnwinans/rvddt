@@ -85,6 +85,7 @@ run it like this:
     sp initialized to top of memory: 0x0000fff0
     Loading 'examples/load4regs/load4regs.bin' to 0x0
     This is rvddt.  Enter ? for help.
+    ddt> t1000
        x0 00000000 f0f0f0f0 0000fff0 f0f0f0f0  f0f0f0f0 f0f0f0f0 f0f0f0f0 f0f0f0f0
        x8 f0f0f0f0 f0f0f0f0 f0f0f0f0 f0f0f0f0  f0f0f0f0 f0f0f0f0 f0f0f0f0 f0f0f0f0
       x16 f0f0f0f0 f0f0f0f0 f0f0f0f0 f0f0f0f0  f0f0f0f0 f0f0f0f0 f0f0f0f0 f0f0f0f0
