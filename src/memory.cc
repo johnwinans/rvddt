@@ -191,7 +191,7 @@ void memory::dump(uint64_t addr, uint64_t length)
 			fprintf(ddtout, " %8.8x:", (uint32_t)j);
 			i = 0;
 		}
-		fprintf(ddtout, "%c%2.2x", (j%8==0&&j%16!=0)?'-':' ', ch & 0xff);
+		fprintf(ddtout, "%s%2.2x", (j%8==0&&j%16!=0)?"  ":" ", ch & 0xff);
 
 		ascii[i] = ch;
 		if ((ascii[i] >= 0x80)||(!isprint(ascii[i])))

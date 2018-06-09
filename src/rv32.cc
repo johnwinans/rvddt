@@ -100,7 +100,7 @@ void rv32::dump()
 			if (i%8 == 0)
 				fprintf(ddtout, "%s  %sx%d", i==0?"":"\n", i<10?" ":"", i);
 			
-			fprintf(ddtout, "%c%8.8x", (i%8!=0 && i%4==0)?'-':' ', getReg(i));
+			fprintf(ddtout, "%s%8.8x", (i%8!=0 && i%4==0)?"  ":" ", getReg(i));
 		}
 		fprintf(ddtout, "\n   pc %8.8x\n", getPc());
 	}
@@ -313,7 +313,7 @@ void rv32::exec_BNE(rv32 *theCpu, uint32_t insn)
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  bne     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
-		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
+		fprintf(ddtout, "%*s# pc = (0x%x != 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
 	theCpu->setPc(cond ? ttarget : ftarget);
@@ -332,7 +332,7 @@ void rv32::exec_BLT(rv32 *theCpu, uint32_t insn)
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  blt     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
-		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
+		fprintf(ddtout, "%*s# pc = (0x%x < 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
 	theCpu->setPc(cond ? ttarget : ftarget);
@@ -351,7 +351,7 @@ void rv32::exec_BGE(rv32 *theCpu, uint32_t insn)
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  bge     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
-		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
+		fprintf(ddtout, "%*s# pc = (0x%x >= 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
 	theCpu->setPc(cond ? ttarget : ftarget);
@@ -370,7 +370,7 @@ void rv32::exec_BLTU(rv32 *theCpu, uint32_t insn)
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  bltu    %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
-		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
+		fprintf(ddtout, "%*s# pc = (0x%x < 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
 	theCpu->setPc(cond ? ttarget : ftarget);
@@ -389,7 +389,7 @@ void rv32::exec_BGEU(rv32 *theCpu, uint32_t insn)
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  bgeu    %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
-		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
+		fprintf(ddtout, "%*s# pc = (0x%x => 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
 	theCpu->setPc(cond ? ttarget : ftarget);
