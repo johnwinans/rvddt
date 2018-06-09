@@ -4,6 +4,7 @@ SUBDIRS=\
 	counter \
 	padd \
 	link \
+	uart \
 	sw
 
 TOP=.
