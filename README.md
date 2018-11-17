@@ -19,6 +19,8 @@ To build everything:
 Note that you will need a suitable compiler to build the examples.  I built mine 
 on Ubuntu 18.04 like this:
 
+NOTE THE FOLLOWING IS GETTING OUT OF DATE -- THE UPSTREAM GCC TOOLS SHOULD NOW WORK.  NEED TO UPGRADE THIS HOWTO:
+
     sudo apt install autoconf automake autotools-dev curl libmpc-dev \
         libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf \
         libtool patchutils bc zlib1g-dev libexpat-dev
