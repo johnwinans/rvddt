@@ -1,12 +1,11 @@
 
-ARCH=riscv32-unknown-elf
 
-CC=$(ARCH)-gcc
-AS=$(ARCH)-as
-LD=$(ARCH)-ld
-OBJCOPY=$(ARCH)-objcopy
-OBJDUMP=$(ARCH)-objdump
-SIZE=$(ARCH)-size
+CC=riscv64-linux-gnu-gcc-8
+AS=riscv64-linux-gnu-as
+LD=riscv64-linux-gnu-ld
+OBJCOPY=riscv64-linux-gnu-objcopy
+OBJDUMP=riscv64-linux-gnu-objdump
+SIZE=riscv64-linux-gnu-size
 
 #LDFLAGS+=-nostdlib -Wl,-Ttext=0x0,-Tdata=0x8000
 LDFLAGS+=-nostdlib -Wl,-Ttext=0x0
@@ -20,6 +19,8 @@ ASFLAGS+=$(CFLAGS)
 CLEAN_DIRS=$(SUBDIRS:%=clean-%)
 ALL_DIRS=$(SUBDIRS:%=all-%)
 
+OBJDUMPFLAGS+=-Mnumeric,no-aliases
+
 .PHONY: all clean world $(CLEAN_DIRS) $(ALL_DIRS)
 
 
@@ -27,7 +28,7 @@ ALL_DIRS=$(SUBDIRS:%=all-%)
 	$(OBJCOPY) $< -O binary $@
 
 %.lst : %
-	$(OBJDUMP) -dr $< > $<.lst
+	$(OBJDUMP) $(OBJDUMPFLAGS) -dr $< > $<.lst
 
 % : %.o
 	$(LINK.c) $(LDFLAGS) -o $@ $^ $(LDLIBS)
