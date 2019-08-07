@@ -11,6 +11,8 @@ CSRC=
 CCSRC=\
 	main.cc\
 	memory.cc\
+	devices.cc\
+	saferead.cc\
 	rv32.cc
 
 COBJ=$(CSRC:.c=.o)

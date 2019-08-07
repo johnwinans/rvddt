@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <string>
 
+constexpr uint32_t devBaseAddress = 0xf0000000;
+
 class memory
 {
 public:

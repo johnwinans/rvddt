@@ -10,8 +10,9 @@
 FILE	*ddtout;
 
 rv32	*cpu;
-static void cli();
+devices	*dev;
 
+static void cli();
 
 static void usage()
 {
@@ -51,6 +52,8 @@ int main(int argc, char **argv)
 
 	mem = new memory(memstart, memlen);
 	cpu = new rv32();
+	dev = new devices(NULL);	// XXX
+
 	uint32_t start = memstart;
 
 	// Consider providing a method to bootstrap the pc & sp regs akin to an ARM?

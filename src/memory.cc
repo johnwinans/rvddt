@@ -5,16 +5,15 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "saferead.h"
+#include "devices.h"
 #include "memory.h"
 #include "main.h"
 
 memory *mem;
 
-#ifdef DEBUGGING_HACKS
-#include "rv32.h"
-extern rv32 *cpu;		// Don't mind the man behind that curtain!!!!
-#endif
-
+/**
+****************************************************************************/
 memory::memory(uint64_t start, uint64_t length)
 {
 	mem = new int8_t[length];
@@ -24,14 +23,21 @@ memory::memory(uint64_t start, uint64_t length)
 	setMemoryWarnings(1);
 }
 
+/**
+****************************************************************************/
 memory::~memory()
 {
 	delete mem;
 	mem = 0;
 }
 
+/**
+****************************************************************************/
 int8_t memory::get8(uint64_t addr)
 {
+	if (addr >= devBaseAddress)
+		return dev->get8(addr);
+
 	if (addr < start || addr >= start+len)
 	{
 		if (getMemoryWarnings())
@@ -49,37 +55,52 @@ int8_t memory::get8(uint64_t addr)
 	return mem[addr-start];
 }
 
+/**
+****************************************************************************/
 int16_t memory::get16(uint64_t addr)
 {
+	if (addr >= devBaseAddress)
+		return dev->get16(addr);
+
 	int16_t i = (uint8_t)get8(addr);
 	i |= ((uint16_t)get8(addr+1))<<8;
 	return i;
 }
 
+/**
+****************************************************************************/
 int32_t memory::get32(uint64_t addr)
 {
+	if (addr >= devBaseAddress)
+		return dev->get32(addr);
+
 	int32_t i = (uint16_t)get16(addr);
 	i |= ((uint32_t)get16(addr+2))<<16;
 	return i;
 }
 
+/**
+****************************************************************************/
 int64_t memory::get64(uint64_t addr)
 {
+	if (addr >= devBaseAddress)
+		return dev->get64(addr);
+
 	int64_t i = (uint32_t)get32(addr);
 	i |= ((uint64_t)get32(addr+4))<<32;
 
 	return i;
 }
 
+/**
+****************************************************************************/
 void memory::set8(uint64_t addr, uint8_t val)
 {
-#ifdef MAGIC_UART_TX_ADDRESS
-	if (addr == MAGIC_UART_TX_ADDRESS)
+	if (addr >= devBaseAddress)
 	{
-		putchar(val);
+		dev->set8(addr, val);
 		return;
 	}
-#endif
 
 	if (addr < start || addr >= start+len)
     {
@@ -97,45 +118,47 @@ void memory::set8(uint64_t addr, uint8_t val)
 	mem[addr-start] = val;
 }
 
+/**
+****************************************************************************/
 void memory::set16(uint64_t addr, uint16_t val)
 {
+	if (addr >= devBaseAddress)
+	{
+		dev->set16(addr, val);
+		return;
+	}
+
 	set8(addr, val&0x00ff);			// little-endian order
 	set8(addr+1, (val>>8)&0x00ff);
 }
 
+/**
+****************************************************************************/
 void memory::set32(uint64_t addr, uint32_t val)
 {
+	if (addr >= devBaseAddress)
+	{
+		dev->set32(addr, val);
+		return;
+	}
+
 	set16(addr, val&0x0000ffff);			// little-endian order
 	set16(addr+2, (val>>16)&0x0000ffff);
 }
 
+/**
+****************************************************************************/
 void memory::set64(uint64_t addr, uint64_t val)
 {
+	if (addr >= devBaseAddress)
+	{
+		dev->set32(addr, val);
+		return;
+	}
+
 	set32(addr, val&0x0000ffffffff);			// little-endian order
 	set32(addr+4, (val>>32)&0x0000ffffffff);
 }
-
-
-/**
-* read len bytes or die trying
-*****************************************************************/
-static ssize_t saferead(int fd, char *buf, ssize_t want)
-{
-	ssize_t got = 0;
-	while (got < want)
-	{
-		ssize_t len = read(fd, &buf[got], want);
-		if (len == -1)
-			return -1;
-		if (len == 0)
-			break;
-
-		got += len;
-		want -= len;
-	}
-	return got;
-}
-
 
 /**
 * Read the given raw file into memory at the given address.
@@ -156,7 +179,8 @@ void memory::readRaw(const char *filename, uint64_t addr)
 	close(fd);
 }
 
-
+/**
+****************************************************************************/
 void memory::dump(uint64_t addr, uint64_t length)
 {
 	int				ch;
