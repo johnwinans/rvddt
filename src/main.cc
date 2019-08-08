@@ -7,6 +7,8 @@
 #include "memory.h"
 #include "rv32.h"
 
+#include "dev/con.h"
+
 FILE	*ddtout;
 
 rv32	*cpu;
@@ -52,7 +54,9 @@ int main(int argc, char **argv)
 
 	mem = new memory(memstart, memlen);
 	cpu = new rv32();
-	dev = new devices(NULL);	// XXX
+	dev = new devices();
+
+	dev->addDevice(new con());
 
 	uint32_t start = memstart;
 

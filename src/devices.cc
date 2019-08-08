@@ -6,108 +6,131 @@
 #include <unistd.h>
 
 #include "devices.h"
+#include "dev/device.h"
 #include "main.h"
 
-//XXX implement a simple 'drive' interface with a single-block DMA buffer
-//XXX along with a control register recognizing read and write command opcodes 
-//XXX and add a status register for delayed completion status
-//XXX also include IRQ generation when that is ready in the CPU
-
-devices::devices(const char *sdFilename)
+devices::devices()
 {
-//XXX open disc dev file
 	setWarnings(1);
 }
 
 devices::~devices()
 {
-//XXX close the disc file
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+		delete *itr;
 }
 
-#if 0
 int8_t devices::get8(uint64_t addr)
 {
-	if (addr < start || addr >= start+len)
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
 	{
-		if (getMemoryWarnings())
-		{
-			printf("WARNING: accessing non-existent device at address: 0x%8.8x", (uint32_t)addr);
-#ifdef DEBUGGING_HACKS
-			printf(", pc=0x%8.8x", cpu->getPc());
-#endif
-			printf("\n");
-		}
-		
-		return 0xff;		// invalid devices area, act like a hi-z TTL bus
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+			return pdev->get8(addr);
 	}
-
-	return mem[addr-start];
+	errorGet("8", addr);
+	return -1;		// invalid devices area, act like a hi-z TTL bus
 }
 
 int16_t devices::get16(uint64_t addr)
 {
-	int16_t i = (uint8_t)get8(addr);
-	i |= ((uint16_t)get8(addr+1))<<8;
-	return i;
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+			return pdev->get16(addr);
+	}
+	errorGet("16", addr);
+	return -1;		// invalid devices area, act like a hi-z TTL bus
 }
 
 int32_t devices::get32(uint64_t addr)
 {
-	int32_t i = (uint16_t)get16(addr);
-	i |= ((uint32_t)get16(addr+2))<<16;
-	return i;
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+			return pdev->get32(addr);
+	}
+	errorGet("32", addr);
+	return -1;		// invalid devices area, act like a hi-z TTL bus
 }
 
 int64_t devices::get64(uint64_t addr)
 {
-	int64_t i = (uint32_t)get32(addr);
-	i |= ((uint64_t)get32(addr+4))<<32;
-
-	return i;
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+			return pdev->get64(addr);
+	}
+	errorGet("64", addr);
+	return -1;		// invalid devices area, act like a hi-z TTL bus
 }
 
 void devices::set8(uint64_t addr, uint8_t val)
 {
-#ifdef MAGIC_UART_TX_ADDRESS
-	if (addr == MAGIC_UART_TX_ADDRESS)
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
 	{
-		putchar(val);
-		return;
-	}
-#endif
-
-	if (addr < start || addr >= start+len)
-    {
-		if (getMemoryWarnings())
-		{
-			printf("WARNING: accessing non-existent devices at address: 0x%8.8x", (uint32_t)addr);
-#ifdef DEBUGGING_HACKS
-			printf(", pc=0x%8.8x", cpu->getPc());
-#endif
-			printf("\n");
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+		{ 
+			pdev->set8(addr, val);
+			return;
 		}
-        return;        // invalid devices area, throw it away
-    }
-
-	mem[addr-start] = val;
+	}
+	errorSet("8", addr, val);
 }
 
 void devices::set16(uint64_t addr, uint16_t val)
 {
-	set8(addr, val&0x00ff);			// little-endian order
-	set8(addr+1, (val>>8)&0x00ff);
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+		{ 
+			pdev->set16(addr, val);
+			return;
+		}
+	}
+	errorSet("16", addr, val);
 }
 
 void devices::set32(uint64_t addr, uint32_t val)
 {
-	set16(addr, val&0x0000ffff);			// little-endian order
-	set16(addr+2, (val>>16)&0x0000ffff);
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+		{ 
+			pdev->set32(addr, val);
+			return;
+		}
+	}
+	errorSet("32", addr, val);
 }
 
 void devices::set64(uint64_t addr, uint64_t val)
 {
-	set32(addr, val&0x0000ffffffff);			// little-endian order
-	set32(addr+4, (val>>32)&0x0000ffffffff);
+	for (auto itr = devs.begin(); itr != devs.end(); ++itr)
+	{
+		device *pdev = *itr;
+		if (pdev->getBaseAddress() <= addr && pdev->getLastAddress() >= addr)
+		{ 
+			pdev->set64(addr, val);
+			return;
+		}
+	}
+	errorSet("64", addr, val);
 }
 
-#endif
+
+void devices::errorSet(const char *len, uint64_t addr, uint64_t val)
+{
+	printf("WARNING: %s-bit write to non-existent device at address: 0x%8.8x = 0x%8.8x\n", len, (uint32_t)addr, (uint32_t)val);
+}
+
+void devices::errorGet(const char *len, uint64_t addr)
+{
+	printf("WARNING: %s-bit read from non-existent device at address: 0x%8.8x\n", len, (uint32_t)addr);
+}

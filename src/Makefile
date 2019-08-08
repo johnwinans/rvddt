@@ -5,6 +5,7 @@ CFLAGS+=-DMAGIC_UART_TX_ADDRESS=0xffff0001
 CFLAGS+=-Wall -Werror
 CXXFLAGS=$(CFLAGS) -std=c++0x
 
+CPPFLAGS+=-I.
 
 CSRC=
 
