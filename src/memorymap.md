@@ -31,11 +31,12 @@ The busy/idle status is always available in the memory card status register.
 
 Memory card control register commands:
 
-	0xf0000001 = write the 512-byte DMA buffer into the memory card at the address in the memory card address register*0x200.
+	0x80000001 = write the 512-byte DMA buffer into the memory card at the address in the memory card address register*0x200.
 
-	0xf0000002 = read 512 bytes from the memory card at the address in the memory card address register*0x200 into the 512-byte DMA buffer.
+	0x80000002 = read 512 bytes from the memory card at the address in the memory card address register*0x200 into the 512-byte DMA buffer.
 
 Memory card status register:
 
 	0x00000000 = idle
-	0x00000001 = busy
+	0x00000001 = busy writing
+	0x00000002 = busy reading

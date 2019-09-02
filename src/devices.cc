@@ -134,3 +134,11 @@ void devices::errorGet(const char *len, uint64_t addr)
 {
 	printf("WARNING: %s-bit read from non-existent device at address: 0x%8.8x\n", len, (uint32_t)addr);
 }
+
+void devices::errorInvalidWrite(const char *len, uint64_t addr, uint64_t val, const char *msg)
+{
+	printf("WARNING: %s-bit write to address 0x%8.8x with illegal value 0x%8.8x\n", len, (uint32_t)addr, (uint32_t)val);
+
+	if (msg)
+		printf("%s\n", msg);
+}

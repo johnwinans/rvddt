@@ -1,9 +1,8 @@
 
 CFLAGS+=-DDEBUGGING_HACKS
-CFLAGS+=-DMAGIC_UART_TX_ADDRESS=0xffff0001
 
 CFLAGS+=-Wall -Werror
-CXXFLAGS=$(CFLAGS) -std=c++0x
+CXXFLAGS=$(CFLAGS) -std=c++11
 
 CPPFLAGS+=-I.
 
@@ -14,7 +13,8 @@ CCSRC=\
 	memory.cc\
 	devices.cc\
 	saferead.cc\
-	rv32.cc
+	rv32.cc\
+	dev/memcard.cc
 
 COBJ=$(CSRC:.c=.o)
 CCOBJ=$(CCSRC:.cc=.o)

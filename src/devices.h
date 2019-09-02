@@ -32,7 +32,7 @@ public:
 
 	static void errorGet(const char *len, uint64_t addr);
 	static void errorSet(const char *len, uint64_t addr, uint64_t val);
-
+	static void errorInvalidWrite(const char *len, uint64_t addr, uint64_t val, const char *msg=NULL);
 
 private:
 	int warnings;

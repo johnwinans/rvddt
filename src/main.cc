@@ -8,6 +8,7 @@
 #include "rv32.h"
 
 #include "dev/con.h"
+#include "dev/memcard.h"
 
 FILE	*ddtout;
 
@@ -57,6 +58,7 @@ int main(int argc, char **argv)
 	dev = new devices();
 
 	dev->addDevice(new con());
+	dev->addDevice(new memcard());
 
 	uint32_t start = memstart;
 
