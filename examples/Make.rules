@@ -1,11 +1,17 @@
 
+ARCH=riscv32-unknown-elf
+GNU_DIR=/home/winans/projects/riscv/install/rv32i
+GNU_BIN=$(GNU_DIR)/bin
 
-CC=riscv64-linux-gnu-gcc-8
-AS=riscv64-linux-gnu-as
-LD=riscv64-linux-gnu-ld
-OBJCOPY=riscv64-linux-gnu-objcopy
-OBJDUMP=riscv64-linux-gnu-objdump
-SIZE=riscv64-linux-gnu-size
+
+CC=$(GNU_BIN)/$(ARCH)-gcc
+AS=$(GNU_BIN)/$(ARCH)-as
+LD=$(GNU_BIN)/$(ARCH)-ld
+OBJCOPY=$(GNU_BIN)/$(ARCH)-objcopy
+OBJDUMP=$(GNU_BIN)/$(ARCH)-objdump
+SIZE=$(GNU_BIN)/$(ARCH)-size
+AR=$(GNU_BIN)/$(ARCH)-ar
+RANLIB=$(GNU_BIN)/$(ARCH)-ranlib
 
 #LDFLAGS+=-nostdlib -Wl,-Ttext=0x0,-Tdata=0x8000
 LDFLAGS+=-nostdlib -Wl,-Ttext=0x0

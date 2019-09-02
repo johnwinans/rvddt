@@ -16,16 +16,12 @@ To build everything:
     make world
     echo "export PATH=$PATH:~/projects/riscv/rvddt/src" >> ~/.bashrc
 
-Note that you will need a suitable compiler to build the examples.  On Ubuntu 18.04, I installed
-one using this command:
+Note that you will need a suitable compiler to build the examples.  
+On Ubuntu 18.04, I installed mine like this:
 
-	sudo apt install gcc-8-riscv64-linux-gnu
-
-Before the availability of the above package, I used to build mine on Ubuntu 18.04 like this:
-
-    sudo apt install autoconf automake autotools-dev curl libmpc-dev \
-        libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf \
-        libtool patchutils bc zlib1g-dev libexpat-dev
+	sudo apt-get install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev \
+		libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils \
+		bc zlib1g-dev libexpat-dev
     mkdir -p ~/projects/riscv
     cd ~/projects/riscv
     git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
