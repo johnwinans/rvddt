@@ -7,7 +7,7 @@
 #include "memory.h"
 #include "rv32.h"
 
-#include "dev/con.h"
+#include "dev/console.h"
 #include "dev/memcard.h"
 
 FILE	*ddtout;
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 	cpu = new rv32();
 	dev = new devices();
 
-	dev->addDevice(new con());
+	dev->addDevice(new console());
 	dev->addDevice(new memcard());
 
 	uint32_t start = memstart;

@@ -1,11 +1,11 @@
-#ifndef con_H
-#define con_H
+#ifndef console_H
+#define console_H
 
 #include "device.h"
 
 #include <stdint.h>
 
-class con : public device
+class console : public device
 {
 public:
     void set8(uint64_t addr, uint8_t val) { putchar(val); }
