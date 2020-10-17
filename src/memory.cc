@@ -195,7 +195,7 @@ void memory::dump(uint64_t addr, uint64_t length)
 	if (startingoffset != 0)
 	{
 		// pre-padd the dump so it looks purdy
-		fprintf(ddtout, " %8.8lx:", addr&~0x0f);
+		fprintf(ddtout, " %8.8llx:", addr&~0x0f);
 		int i;
 		for (i=0; i<startingoffset; ++i)
 			fprintf(ddtout, "   ");
