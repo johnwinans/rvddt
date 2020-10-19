@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 #include "saferead.h"
 #include "devices.h"
@@ -195,7 +196,7 @@ void memory::dump(uint64_t addr, uint64_t length)
 	if (startingoffset != 0)
 	{
 		// pre-padd the dump so it looks purdy
-		fprintf(ddtout, " %8.8llx:", addr&~0x0f);
+		fprintf(ddtout, " %8.8" PRIx64 ":%s", addr&~0x0f, startingoffset>8?" ":"");
 		int i;
 		for (i=0; i<startingoffset; ++i)
 			fprintf(ddtout, "   ");
@@ -222,6 +223,8 @@ void memory::dump(uint64_t addr, uint64_t length)
 			ascii[i] = '.';
 		++i;
 	}
+	if (j%16 && j%16<9)
+		fprintf(ddtout, " ");
 	while (j%16)
 	{
 		fprintf(ddtout, "   ");
