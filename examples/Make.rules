@@ -1,6 +1,6 @@
 
 ARCH=riscv32-unknown-elf
-GNU_DIR=/home/winans/projects/riscv/install/rv32i
+GNU_DIR=$(HOME)/projects/riscv/install/rv32i
 GNU_BIN=$(GNU_DIR)/bin
 
 
