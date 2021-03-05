@@ -5,6 +5,7 @@ GNU_BIN=$(GNU_DIR)/bin
 
 
 CC=$(GNU_BIN)/$(ARCH)-gcc
+CXX=$(GNU_BIN)/$(ARCH)-g++
 AS=$(GNU_BIN)/$(ARCH)-as
 LD=$(GNU_BIN)/$(ARCH)-ld
 OBJCOPY=$(GNU_BIN)/$(ARCH)-objcopy
@@ -20,7 +21,10 @@ CFLAGS+=-ffreestanding -fno-pic
 CFLAGS+=-march=rv32i -mabi=ilp32
 CFLAGS+=-Wl,--no-relax			# see: https://github.com/riscv/riscv-gcc/issues/120
 
+
+
 ASFLAGS+=$(CFLAGS)
+CXXFLAGS+=$(CFLAGS)
 
 CLEAN_DIRS=$(SUBDIRS:%=clean-%)
 ALL_DIRS=$(SUBDIRS:%=all-%)
@@ -42,6 +46,15 @@ OBJDUMPFLAGS+=-Mnumeric,no-aliases
 
 %.s: %.c
 	$(COMPILE.c) -S -o $@ $<
+
+%.s: %.cc
+	$(COMPILE.cc) -S -o $@ $<
+
+%.o: %.c
+	$(COMPILE.c) -c -o $@ $<
+
+%.o: %.cc
+	$(COMPILE.cc) -c -o $@ $<
 
 %.srec: %
 	$(OBJCOPY) $< -O srec $@ 
