@@ -17,7 +17,8 @@ RANLIB=$(GNU_BIN)/$(ARCH)-ranlib
 #LDFLAGS+=-nostdlib -Wl,-Ttext=0x0,-Tdata=0x8000
 LDFLAGS+=-nostdlib -Wl,-Ttext=0x0
 
-CFLAGS+=-ffreestanding -fno-pic
+CFLAGS+=-ffreestanding 
+CFLAGS+=-fno-pic
 CFLAGS+=-march=rv32i -mabi=ilp32
 CFLAGS+=-Wl,--no-relax			# see: https://github.com/riscv/riscv-gcc/issues/120
 
