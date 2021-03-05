@@ -67,10 +67,15 @@ int main(int argc, char **argv)
 	cpu->setPc(start);					
 
 	// Prime the stack pointer 
+#if 1
+	uint32_t stackTop = memstart+memlen;
+	cpu->setReg(2, stackTop);
+#else
 	uint32_t stackTop = memstart+memlen-16;		// newlib crt0 accesses beyond sp?
 	cpu->setReg(2, stackTop);	
 	mem->set64(stackTop, 0);					//  XXX zero some space
 	mem->set64(stackTop+8, 0);					//  ... I never checked to see how argv & argc work
+#endif
 
 	printf("sp initialized to top of memory: 0x%8.8x\n", cpu->getReg(2));
 
