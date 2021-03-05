@@ -5,7 +5,8 @@ SUBDIRS=\
 	padd \
 	link \
 	uart \
-	sw
+	sw \
+	freestanding
 
 TOP=.
 include $(TOP)/Make.rules
