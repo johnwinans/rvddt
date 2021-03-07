@@ -13,3 +13,5 @@ clean::
 
 TOP=..
 include $(TOP)/Make.rules
+
+LDFLAGS+=-Wl,--no-relax

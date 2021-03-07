@@ -14,13 +14,17 @@ SIZE=$(GNU_BIN)/$(ARCH)-size
 AR=$(GNU_BIN)/$(ARCH)-ar
 RANLIB=$(GNU_BIN)/$(ARCH)-ranlib
 
-#LDFLAGS+=-nostdlib -Wl,-Ttext=0x0,-Tdata=0x8000
-LDFLAGS+=-nostdlib -Wl,-Ttext=0x0
 
 CFLAGS+=-ffreestanding 
 CFLAGS+=-fno-pic
 CFLAGS+=-march=rv32i -mabi=ilp32
-CFLAGS+=-Wl,--no-relax			# see: https://github.com/riscv/riscv-gcc/issues/120
+
+
+LDFLAGS+=-nostdlib
+LDFLAGS+=-Wl,-Ttext=0x0
+
+# see: https://github.com/riscv/riscv-gcc/issues/120
+#LDFLAGS+=-Wl,--no-relax
 
 
 
@@ -52,10 +56,10 @@ OBJDUMPFLAGS+=-Mnumeric,no-aliases
 	$(COMPILE.cc) -S -o $@ $<
 
 %.o: %.c
-	$(COMPILE.c) -c -o $@ $<
+	$(COMPILE.c) -o $@ $<
 
 %.o: %.cc
-	$(COMPILE.cc) -c -o $@ $<
+	$(COMPILE.cc) -o $@ $<
 
 %.srec: %
 	$(OBJCOPY) $< -O srec $@ 
