@@ -256,7 +256,7 @@ void rv32::exec_JAL(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  jal     %s, .%+d", insn, rn(rd), imm);
+		int len = fprintf(ddtout, "%8.8x  jal     %s, 0x%x", insn, rn(rd), target);
 		fprintf(ddtout, "%*s# pc = 0x%8.8x = 0x%8.8x + 0x%8.8x", COMMENT_OFFSET-len, "", target, theCpu->getPc(), imm);
 	}
 
@@ -273,7 +273,7 @@ void rv32::exec_JALR(rv32 *theCpu, uint32_t insn)
 	int32_t target = (theCpu->getReg(rs1)+imm) & ~1;
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  jalr    %s, %+d(x%d)", insn, rn(rd), imm, rs1);
+		int len = fprintf(ddtout, "%8.8x  jalr    %s, %d(x%d)", insn, rn(rd), imm, rs1);
 		fprintf(ddtout, "%*s# %s=%8.8x, pc = 0x%8.8x = %d(0x%8.8x)&~1", COMMENT_OFFSET-len, "", rn(rd), theCpu->getPc()+4, target, imm, theCpu->getReg(rs1));
 	}
 
@@ -293,7 +293,7 @@ void rv32::exec_BEQ(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  beq     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  beq     %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x == 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -312,7 +312,7 @@ void rv32::exec_BNE(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  bne     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  bne     %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x != 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -331,7 +331,7 @@ void rv32::exec_BLT(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  blt     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  blt     %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x < 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -350,7 +350,7 @@ void rv32::exec_BGE(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  bge     %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  bge     %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x >= 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -369,7 +369,7 @@ void rv32::exec_BLTU(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  bltu    %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  bltu    %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x < 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -388,7 +388,7 @@ void rv32::exec_BGEU(rv32 *theCpu, uint32_t insn)
 
 	if (theCpu->trace)
 	{
-		int len = fprintf(ddtout, "%8.8x  bgeu    %s, %s, %d", insn, rn(rs1), rn(rs2), imm);
+		int len = fprintf(ddtout, "%8.8x  bgeu    %s, %s, 0x%x", insn, rn(rs1), rn(rs2), ttarget);
 		fprintf(ddtout, "%*s# pc = (0x%x => 0x%x) ? 0x%x : 0x%x", COMMENT_OFFSET-len, "", theCpu->getReg(rs1), theCpu->getReg(rs2), ttarget, ftarget);
 	}
 
@@ -650,7 +650,7 @@ void rv32::exec_ANDI(rv32 *theCpu, uint32_t insn)
 void rv32::exec_SLLI(rv32 *theCpu, uint32_t insn)
 {
 	int8_t rs1 = theCpu->getInsnRs1(insn);
-	int8_t shamt = theCpu->getInsnRs2(insn);
+	int8_t shamt = theCpu->getInsnRs2(insn);		// Note that rs2 is in same place as shamt on RV32I
 	int8_t rd = theCpu->getInsnRd(insn);
 
 	int32_t result = (theCpu->getReg(rs1) << shamt);	
@@ -668,7 +668,7 @@ void rv32::exec_SLLI(rv32 *theCpu, uint32_t insn)
 void rv32::exec_SRLI(rv32 *theCpu, uint32_t insn)
 {
 	int8_t rs1 = theCpu->getInsnRs1(insn);
-	int8_t shamt = theCpu->getInsnRs2(insn);
+	int8_t shamt = theCpu->getInsnRs2(insn);		// Note that rs2 is in same place as shamt on RV32I
 	int8_t rd = theCpu->getInsnRd(insn);
 
 	int32_t result = ((uint32_t)theCpu->getReg(rs1) >> shamt);	
@@ -686,7 +686,7 @@ void rv32::exec_SRLI(rv32 *theCpu, uint32_t insn)
 void rv32::exec_SRAI(rv32 *theCpu, uint32_t insn)
 {
 	int8_t rs1 = theCpu->getInsnRs1(insn);
-	int8_t shamt = theCpu->getInsnRs2(insn);
+	int8_t shamt = theCpu->getInsnRs2(insn);		// Note that rs2 is in same place as shamt on RV32I
 	int8_t rd = theCpu->getInsnRd(insn);
 
 	int32_t result = (theCpu->getReg(rs1) >> shamt);	
@@ -815,7 +815,7 @@ void rv32::exec_SRL(rv32 *theCpu, uint32_t insn)
 	int8_t rd = theCpu->getInsnRd(insn);
 
 	int shamt = theCpu->getReg(rs2)&0x01f;
-	int result = ((uint32_t)theCpu->getReg(rs1)) >> shamt;
+	int result = ((uint32_t)theCpu->getReg(rs1)) >> shamt;	// gcc will do with with a logical shift on a PC
 	if (theCpu->trace)
 	{
 		int len = fprintf(ddtout, "%8.8x  srl     %s, %s, %s", insn, rn(rd), rn(rs1), rn(rs2));
@@ -832,7 +832,7 @@ void rv32::exec_SRA(rv32 *theCpu, uint32_t insn)
 	int8_t rs2 = theCpu->getInsnRs2(insn);
 	int8_t rd = theCpu->getInsnRd(insn);
 
-	int shamt = theCpu->getReg(rs2)&0x01f;
+	int shamt = theCpu->getReg(rs2)&0x01f;				// gcc will do with with an arithmetic shift on a PC
 	int result = theCpu->getReg(rs1) >> shamt;
 	if (theCpu->trace)
 	{
