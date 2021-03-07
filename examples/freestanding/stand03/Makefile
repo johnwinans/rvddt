@@ -19,4 +19,4 @@ clean::
 
 .PHONY: run
 run: prog.bin
-	../../../srtc/rvddt -l2000 -f prog.bin
+	../../../src/rvddt -l0x2000 -f prog.bin

@@ -18,4 +18,4 @@ clean::
 
 .PHONY: run
 run: prog.bin
-	../../../rv32i -m3000 -irz prog.bin
+	../../../src/rvddt -l0x3000 -f prog.bin
