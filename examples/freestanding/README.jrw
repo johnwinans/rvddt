@@ -44,7 +44,7 @@ stand08:
 stand09: (error)
 	Add a call to malloc() that fails because there is no sbrk()
 
-stand10:
+stand10: (note that the text region is too big to hardcode the data to start at 0x1000)
 	Add stubs for the newlib's stdlib dependancies in stub_stdlib.c
 	Demonstrate that malloc() is working properly.
 
