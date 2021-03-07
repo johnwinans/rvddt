@@ -4,6 +4,9 @@ include $(TOP)/Make.rules
 LDLIBS=
 CFLAGS+=-O
 
+LDFLAGS+=-Wl,--no-relax
+LDFLAGS+=-Wl,-Tdata=0x1000
+
 PROGS=prog prog.bin prog.lst 
 
 all:: $(PROGS)

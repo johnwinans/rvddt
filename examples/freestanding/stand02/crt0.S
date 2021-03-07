@@ -11,14 +11,13 @@ _start:
 .option pop
 
 	# Clear the bss segment
-	la      a0,_edata		# a0 = start zeroing memory here
-	la      a1,_end			# a1 = end zeroing here-1
-	li      a2,0
+	la      a0,__bss_start		# a0 = start zeroing memory here
+	la      a1,__BSS_END__		# a1 = end zeroing here-1
 
 clear_bss:
-	bgeu	a0,a1,done_bss
-	sb		a2,0(a0)
-	addi	a0,a0,1
+	bgeu	a0,a1,done_bss		# while (!(a0 >= a1))
+	sb		x0,0(a0)			# 	*a0 = 0;
+	addi	a0,a0,1				# 	++a0
 	beq		x0,x0,clear_bss
 done_bss:
 
@@ -30,10 +29,8 @@ done_bss:
 
 	// how to put items into the data region
 	.data
-v1:
-	.word	0x11,0x22,0x33,0x44							// this is same as: int32_t v1[] = {0x11,0x22,0x33,0x44};
-v2:
-	.word	0x11111111,0x22222222,0x33333333,0x44444444	// this is same as: int32_t v2[] = {0x11111111,0x22222222,0x33333333,0x44444444};
+v1: .word	0x11,0x22,0x33,0x44							// this is same as: int32_t v1[] = {0x11,0x22,0x33,0x44};
+v2: .word	0x11111111,0x22222222,0x33333333,0x44444444	// this is same as: int32_t v2[] = {0x11111111,0x22222222,0x33333333,0x44444444};
 
 
 	// how to put items into the bss

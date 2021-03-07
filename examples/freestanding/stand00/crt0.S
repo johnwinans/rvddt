@@ -4,7 +4,7 @@
 
 _start:
 
-  # Initialize global pointer
+	# Initialize global pointer
 .option push
 .option norelax
 setgp:	
@@ -12,29 +12,23 @@ setgp:
 	addi  gp,gp, %pcrel_lo(setgp)
 .option pop
 
-	# Clear the bss segment
+	# Clear the bss segment (starting at __bss_start and ending at __BSS_END__-1
 
-	// a0 = _edata
-set_edata:
-	auipc	a0,%pcrel_hi(_edata)
-	addi	a0,a0,%pcrel_lo(set_edata)
+	// a0 = __bss_start
+	lui		a0,%hi(__bss_start)
+	addi	a0,a0,%lo(__bss_start)
 
 	// a1 = _end
-set_end:
-	auipc	a1,%pcrel_hi(_end)
-	addi	a1,a1,%pcrel_lo(set_end)
-
-	// a2 = 0
-	add		a2,x0,x0
+	lui		a1,%hi(__BSS_END__)
+	addi	a1,a1,%lo(__BSS_END__)
 
 clear_bss:
-	bgeu	a0,a1,done_bss
-	sb		a2,0(a0)
-	addi	a0,a0,1
-	beq		x0,x0,clear_bss
-done_bss:
+    bgeu    a0,a1,done_bss      # while (!(a0 >= a1)) {
+    sb      x0,0(a0)            #   *a0 = 0;
+    addi    a0,a0,1             #   ++a0
+    beq     x0,x0,clear_bss		# }
+done_bss:   
 
 	ebreak
-
 
 	.size  _start, .-_start
