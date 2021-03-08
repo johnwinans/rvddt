@@ -81,7 +81,7 @@ its entry point (the first instruction to execute) located at address 0 and then
 run it like this:
 
     $ rvddt -f examples/load4regs/load4regs.bin
-    sp initialized to top of memory: 0x0000fff0
+    sp initialized to top of memory: 0x00010000
     Loading 'examples/load4regs/load4regs.bin' to 0x0
     This is rvddt.  Enter ? for help.
     ddt> t1000
@@ -120,7 +120,7 @@ run it like this:
 If you prefer the ABI register names, then use the `a` command and run it like this:
 
     $ ./src/rvddt -f examples/counter/counter.bin
-    sp initialized to top of memory: 0x0000fff0
+    sp initialized to top of memory: 0x00010000
     Loading 'examples/counter/counter.bin' to 0x0
     This is rvddt.  Enter ? for help.
     ddt> a
