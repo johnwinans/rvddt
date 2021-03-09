@@ -1,5 +1,5 @@
   .text
-  .global _start
+  .global _start			// void _start() { ... }
   .type   _start, @function
 
 _start:
@@ -12,7 +12,7 @@ setgp:
 	addi  gp,gp, %pcrel_lo(setgp)
 .option pop
 
-	# Clear the bss segment (starting at __bss_start and ending at __BSS_END__-1
+	# Clear the bss segment (starting at __bss_start and ending at __BSS_END__-1)
 
 	// a0 = __bss_start
 	lui		a0,%hi(__bss_start)

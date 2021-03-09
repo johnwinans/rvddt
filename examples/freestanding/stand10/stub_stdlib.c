@@ -121,7 +121,7 @@ int _write(int file, char *ptr, int len)
 }
  
 /**
-* Adjust the brk pinter up or down as requested.
+* Adjust the brk pointer up or down as requested.
 *
 * The initial brk address is set to _end (the end of the BSS).
 * Any requests to adjust the brk will be performed without any
