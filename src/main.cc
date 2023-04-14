@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 
 	delete cpu;
 	delete mem;
+	delete dev;
 
 	fflush(ddtout);
 	if (ddtout!=stdout)
