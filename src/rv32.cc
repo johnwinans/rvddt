@@ -175,6 +175,11 @@ int rv32::exec()
 		fprintf(ddtout, "%8.8x: 00000073 ecall (unimplemented)\n", getPc());
 		return 1;
 	}
+	if (0x00000073 == (insn & 0x0000007f))
+	{
+		fprintf(ddtout, "%8.8x: %8.8x csr (unimplemented)\n", getPc(), insn);
+		return 1;
+	}
 
 	return execInsn(insn);
 }
