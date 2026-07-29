@@ -31,13 +31,22 @@
 class console : public device
 {
 public:
-    void set8(uint64_t addr, uint8_t val) { putchar(val); }
+	console();
+	~console();
+    void set8(uint64_t addr, uint8_t val);
+	int8_t get8(uint64_t addr);
 
-    uint64_t getBaseAddress() { return 0xffff0001; }
-    uint64_t getLastAddress() { return 0xffff0001; }
+    uint64_t getBaseAddress() { return 0xffff0000; }
+    uint64_t getLastAddress() { return 0xffff0002; }
+	constexpr static uint64_t statusRegAddr = { 0xffff0002 };
+	constexpr static uint64_t TxRegAddr = { 0xffff0001 };
+	constexpr static uint64_t RxRegAddr = { 0xffff0000 };
     const char *getIdent() { return "CON"; }
 
 private:
+	int8_t c;
+	int s;
+    struct termios *pOldt;
 };
 
 #endif

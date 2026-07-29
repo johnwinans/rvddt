@@ -14,7 +14,8 @@ CCSRC=\
 	devices.cc\
 	saferead.cc\
 	rv32.cc\
-	dev/memcard.cc
+	dev/memcard.cc\
+	dev/console.cc
 
 COBJ=$(CSRC:.c=.o)
 CCOBJ=$(CCSRC:.cc=.o)
